@@ -1,0 +1,32 @@
+name: Build Windows Customizer
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    steps:
+    - name: Checkout Repository
+      uses: actions/checkout@v4
+
+    - name: Install ps2exe Module
+      shell: pwsh
+      run: |
+        Install-Module -Name ps2exe -Force -Scope CurrentUser
+
+    - name: Compile PowerShell Script to Executable
+      shell: pwsh
+      run: |
+        # Replace 'customize.ps1' with your script's actual filename
+        Invoke-PS2EXE -InputFile "customize.ps1" -OutputFile "WindowsCustomizer.exe" -noConsole
+
+    - name: Upload Build Artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: WindowsCustomizer-App
+        path: WindowsCustomizer.exe
